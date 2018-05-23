@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Agent;
+use App\Models\Location;
 use App\Libs\ApiResponse;
 
 class AgentController extends Controller
@@ -62,7 +63,24 @@ class AgentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $params = self::getParams($request);
+        if(empty($params['latitude']) || empty($params['longitude']) || empty($params['agent_token'])){
+          return ApiResponse::sendErr("location incorrect or device does not register!");
+        }
+
+        $location = new Location();
+        $location->agent_token = $params['agent_token'];
+        $location->latitude = $params['latitude'];
+        $location->longitude = $params['longitude'];
+        $location->device = isset($params['device']) ? $params['device']:'';
+        $location->time = time();
+        try{
+          $location->save();
+        }
+        catch(Exception $e){
+          return ApiResponse::sendErr($e->getMessage());
+        }
+        return ApiResponse::send($location);
     }
 
     /**

@@ -19,6 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // Route::group(['prefix' => 'api'], function () {
     Route::post('check', 'AgentController@index');
     Route::post('create', 'AgentController@create');
+    Route::post('store', 'AgentController@store');
 // });
 
 Route::view('/{any}', 'welcome')
