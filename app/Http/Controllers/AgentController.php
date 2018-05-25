@@ -73,6 +73,7 @@ class AgentController extends Controller
         $location->latitude = $params['latitude'];
         $location->longitude = $params['longitude'];
         $location->device = isset($params['device']) ? $params['device']:'';
+        $location->device_id = isset($params['device_id']) ? $params['device_id']:'';
         $location->time = time();
         try{
           $location->save();
