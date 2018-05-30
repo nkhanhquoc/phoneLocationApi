@@ -1,11 +1,22 @@
 <?php
-
 namespace App\Http\Controllers;
+# @Author: Nguyen Quoc Khanh <nkhanhquoc>
+# @Date:   23-May-2018
+# @Email:  nkhanhquoc@gmail.com
+# @Project: {ProjectName}
+# @Filename: AgentController.php
+# @Last modified by:   nkhanhquoc
+# @Last modified time: 30-May-2018
+# @Copyright: by nkhanhquoc@gmail.com
+
+
 
 use Illuminate\Http\Request;
 use App\Models\Agent;
 use App\Models\Location;
+use App\Models\Device;
 use App\Libs\ApiResponse;
+use Validator;
 
 class AgentController extends Controller
 {
@@ -31,7 +42,14 @@ class AgentController extends Controller
       if(empty($agent)){
         return $this->create($request);
       } else {
-        return ApiResponse::send($agent->toArray());
+        $arrAgent = $agent->toArray();
+        $dv = Device::whereDeviceId($params['device_id'])->first();
+        if(!empty($dv)) {
+          $arrAgent['device_name'] = $dv->device_name;
+        } else {
+          $arrAgent['device_name'] = '';
+        }
+        return ApiResponse::send($arrAgent);
       }
     }
 
@@ -90,9 +108,34 @@ class AgentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function addDevice(Request $request)
     {
-        //
+        $params = self::getParams($request);
+        $validate = Validator::make($params,
+          [
+            'agent_id' => 'required|numeric',
+            'device_id' => 'required'
+          ]
+      );
+      if($validate->fails()){
+        return ApiResponse::sendErr('Bad Request!', 1, $validate->errors()->all());
+      }
+
+      $dv = Device::whereDeviceId($params['device_id'])->whereAgentId($params['agent_id'])->first();
+      if(!empty($dv)){
+        $dv->device_name = empty($params['device_name']) ? 'default':$params['device_name'];
+      } else {
+        $dv = new Device();
+        $dv->agent_id = $params['agent_id'];
+        $dv->device_id = $params['device_id'];
+        $dv->device_name = empty($params['device_name']) ? 'default':$params['device_name'];
+      }
+      try{
+        $dv->save();
+      }catch(Exception $e){
+          return ApiResponse::sendErr($e->getMessage());
+      }
+      return ApiResponse::send($dv);
     }
 
     /**

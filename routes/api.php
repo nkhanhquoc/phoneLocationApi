@@ -1,4 +1,15 @@
 <?php
+# @Author: Nguyen Quoc Khanh <nkhanhquoc>
+# @Date:   23-May-2018
+# @Email:  nkhanhquoc@gmail.com
+# @Project: {ProjectName}
+# @Filename: api.php
+# @Last modified by:   nkhanhquoc
+# @Last modified time: 30-May-2018
+# @Copyright: by nkhanhquoc@gmail.com
+
+
+
 
 use Illuminate\Http\Request;
 
@@ -20,6 +31,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     Route::post('check', 'AgentController@index');
     Route::post('create', 'AgentController@create');
     Route::post('store', 'AgentController@store');
+    Route::post('add-device', 'AgentController@addDevice');
 // });
 
 Route::view('/{any}', 'welcome')
